@@ -13,10 +13,12 @@ BINARYEDGE_URL = "https://api.binaryedge.io/v2/user/subscription"
 BUILTWITH_URL = "https://api.builtwith.com/usagev2/api.json"
 CENSYS_URL = "https://search.censys.io/api/v1/account"
 FULLHUNT_URL = "https://fullhunt.io/api/v1/auth/status"
+FOFA_URL = "https://fofa.info/api/v1/info/my"
 HUNTER_URL = "https://api.hunter.io/v2/account"
 INTELX_URL = "https://2.intelx.io/authenticate/info"
 IPINFO_URL = "https://ipinfo.io/me"
 NETWORKDB_URL = "https://networksdb.io/api/key"
+NETLAS_URL = "https://app.netlas.io/api/users/current/"
 ONYPHE_URL = "https://www.onyphe.io/api/v2/user"
 PASSIVETOTAL_URL = "https://api.passivetotal.org/v2/account/quota"
 SECURITYTRAILS_URL = "https://api.securitytrails.com/v1/account/usage"
@@ -24,7 +26,6 @@ SHODAN_URL = "https://api.shodan.io/api-info"
 URLSCAN_URL = "https://urlscan.io/user/quotas"
 WHOISXMLAPI_URL = "https://user.whoisxmlapi.com/service/account-balance"
 ZOOMEYE_URL = "https://api.zoomeye.org/user/login"
-NETLAS_URL = "https://app.netlas.io/api/users/current/"
 
 CHECK_MARK = "✅"
 X_MARK = "❌"
@@ -194,6 +195,33 @@ def get_fullHunt_credits(table, apiKey):
                 )
     except Exception as e:
         print(f"[-] An error occurred while fetching {api_name} credits: {e}")
+
+def get_fofa_credits(table, email, apiKey):
+    tier = "N/A"
+    credits_left = 0
+    credits_total = 0
+    credits_used = 0
+    credits_reset_date = "N/A"
+    product = "N/A"
+    api_name = "FOFA"
+
+    # curl -X GET "https://fofa.info/api/v1/info/my?email=email&key=apiKey"
+    try:
+        response = requests.get(FOFA_URL, params={"email":email,"key":apiKey}, headers={"Accept":"application/json"})
+        response_json = response.json()
+        
+        if response.status_code == 200 and response_json['error'] == False:
+            credits_total = response_json['fcoin']
+            table.add_row(
+                f"{mask_api_key(email)}:{mask_api_key(apiKey)}", api_name, product, tier, f"{credits_total} cpm", str(credits_used), str(credits_left), credits_reset_date, support, valid
+                )
+        else:
+            table.add_row(
+                f"{mask_api_key(email)}:{mask_api_key(apiKey)}", api_name, product, tier, f"{credits_total} cpm", str(credits_used), str(credits_left), credits_reset_date, support, notValid
+                )
+    except Exception as e:
+        print(f"[-] An error occurred while fetching {api_name} credits: {e}")
+
 
 def get_hunter_credits(table, apiKey):
     tier = "N/A"
@@ -728,6 +756,10 @@ def main():
                         userName = account_info.get('username', '')
                         password = account_info.get('password', '')
                         get_zoomeye_credits(table, userName, password)
+                    elif service == 'fofa':
+                        userName = account_info.get('username', '')
+                        apikey = account_info.get('apikey', '')
+                        get_fofa_credits(table, userName, apikey)
                     # elif service == "spamhaus":
                     #     userName = account_info.get('username', '')
                     #     password = account_info.get('password', '')
@@ -749,6 +781,10 @@ def main():
                         userName = apiKey.split(":")[0]
                         apiKey = apiKey.split(":")[1]
                         get_passive_total_credits(table, userName, apiKey)
+                    elif service == 'fofa':
+                        userName = apiKey.split(":")[0]
+                        apiKey = apiKey.split(":")[1]
+                        get_fofa_credits(table, userName, apiKey)
                     else:
                         call_service(table, service, apiKey)
 

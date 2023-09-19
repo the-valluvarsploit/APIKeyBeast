@@ -1,5 +1,5 @@
 # APIkeyBeast
-Track API keys credit usage in one place.
+API Keys Credit Usage Tracker for Subfinder and Amass
 
 <img src="assets/images/help.png" alt="Help Image">
 

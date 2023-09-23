@@ -120,7 +120,6 @@ def get_builtwith_credits(table, apiKey):
         response_json = response.json()
 
         if response.status_code == 200 and "purchased" in response_json:
-            tier = "Free"
             credits_total = response_json['purchased']
             credits_used = response_json['used']
             credits_left = response_json['remaining']
@@ -150,7 +149,6 @@ def get_censys_credits(table, apiId, apiSecret):
         
         if response.status_code == 200:
             response_json = response.json()
-            tier = "Free"
             credits_total = response_json['quota']['allowance']
             credits_used = response_json['quota']['used']
             credits_left = credits_total - credits_used
@@ -222,7 +220,6 @@ def get_fofa_credits(table, email, apiKey):
     except Exception as e:
         print(f"[-] An error occurred while fetching {api_name} credits: {e}")
 
-
 def get_hunter_credits(table, apiKey):
     tier = "N/A"
     credits_left = 0
@@ -237,7 +234,7 @@ def get_hunter_credits(table, apiKey):
         
         if response.status_code == 200:
             response_json = response.json()
-            userName = response_json['data']['email']
+            # userName = response_json['data']['email']
             tier = response_json['data']['plan_name']
             credits_total = response_json['data']['requests']['searches']['available']
             credits_used = response_json['data']['requests']['searches']['used']
@@ -263,8 +260,6 @@ def get_intelx_credits(table, apiKey):
     credits_reset_date = "N/A"
     product = "N/A"
     api_name = "IntelX"
-    # userName = os.environ.get('INTELX_USERNAME')
-    # apiKey = os.environ.get('INTELX_API_KEY')
 
     # curl https://2.intelx.io/authenticate/info -H "x-key: API_KEY" -H "User-Agent: IX-Python/0.5" -H "Accept: application/json"
     try:
@@ -273,7 +268,6 @@ def get_intelx_credits(table, apiKey):
         if response.status_code == 200:
             response_json = response.json()
             product_paths = response_json['paths']
-            tier = "Academic"
             local_product_path = ['/file/preview','/file/read','/file/view','/intelligent/search','/intelligent/search/export','/phonebook/search']
 
             for key, value in product_paths.items():
@@ -320,7 +314,6 @@ def get_ipinfo_credits(table, apiKey):
         response_json = response.json()
 
         if response.status_code == 200 and "token" in response_json:
-            tier = "Free"
             credits_total = response_json['requests']['limit']
             credits_used = response_json['requests']['month']
             credits_left = response_json['requests']['remaining']
@@ -380,7 +373,6 @@ def get_onyphe_credits(table, apiKey):
         
         if response.status_code == 200:
             response_json = response.json()
-            tier = "Free"
             credits_total = 250
             credits_left = response_json['results'][0]['credits']
             credits_used = credits_total - credits_left
@@ -409,7 +401,6 @@ def get_passive_total_credits(table, userName, apiKey):
         
         if response.status_code == 200:
             response_json = response.json()
-            tier = "Free"
             credits_used = response_json['user']['counts']['search_api']
             credits_total = response_json['user']['limits']['search_api']
             credits_left = credits_total - credits_used
@@ -439,7 +430,6 @@ def get_security_trails_credits(table, apiKey):
         
         if response.status_code == 200:
             response_json = response.json()
-            tier = "Free"
             credits_total = response_json['allowed_monthly_usage']
             credits_used = response_json['current_monthly_usage']
             credits_left = credits_total - credits_used
@@ -523,8 +513,6 @@ def get_spamhaus_credits(table, userName, password):
     credits_reset_date = "N/A"
     product = "N/A"
     api_name = "Spamhaus"
-    # userName = os.environ.get("SPAMHAUS_USERNAME")
-    # password = os.environ.get("SPAMHAUS_PASSSWORD")
 
     try:
         login = requests.post(
@@ -590,7 +578,6 @@ def get_urlscan_credits(table, apiKey):
         response_json = response.json()
 
         if not response_json['source'] == 'ip-address':
-            tier = "Free"
             credits_total = response_json['limits']['search']['day']['limit']
             credits_used = response_json['limits']['search']['day']['used']
             credits_left = response_json['limits']['search']['day']['remaining']
@@ -623,7 +610,6 @@ def get_whoisxmlapi_credits(table, apiKey):
         for item in response_json['data']:
             product = item['product']['name']
             if product == "Domain Research Suite":
-                tier = "Free"
                 credits_total = 500
                 credits_left = item['credits']
                 credits_used = credits_total - credits_left

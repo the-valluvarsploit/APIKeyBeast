@@ -362,8 +362,8 @@ def get_newtworkdb_credits(table, apiKey):
 def get_onyphe_credits(table, apiKey):
     tier = "N/A"
     credits_left = 0
-    credits_total = 0
-    credits_used = 0
+    credits_total = "N/A"
+    credits_used = "N.A"
     credits_reset_date = "N/A"
     product = "N/A"
     api_name = "Onyphe"
@@ -373,16 +373,17 @@ def get_onyphe_credits(table, apiKey):
         
         if response.status_code == 200:
             response_json = response.json()
-            credits_total = 250
+            tier = response_json['results'][0]['view']
+            # credits_total = response_json['results'][0]['credits']
             credits_left = response_json['results'][0]['credits']
-            credits_used = credits_total - credits_left
+            # credits_used = credits_total - credits_left
 
             table.add_row(
-                mask_api_key(apiKey), api_name, product, tier, f"{credits_total} cpm", str(credits_used), str(credits_left), credits_reset_date, support, valid
+                mask_api_key(apiKey), api_name, product, tier, credits_total, credits_used, str(credits_left), credits_reset_date, support, valid
                 )
         else:
             table.add_row(
-                mask_api_key(apiKey), api_name, product, tier, f"{credits_total} cpm", str(credits_used), str(credits_left), credits_reset_date, support, notValid
+                mask_api_key(apiKey), api_name, product, tier, credits_total, credits_used, str(credits_left), credits_reset_date, support, notValid
                 )
     except Exception as e:
         print(f"[-] An error occurred while fetching {api_name} credits: {e}")
